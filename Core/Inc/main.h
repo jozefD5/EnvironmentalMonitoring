@@ -56,7 +56,7 @@ void Error_Handler(void);
 /* USER CODE BEGIN EFP */
 
 
-void serial_print(char *str);
+
 
 
 /* USER CODE END EFP */

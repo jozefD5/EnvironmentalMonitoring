@@ -24,20 +24,15 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "main.h"
+#include "../EnvCore/serialcom/serialcom.h"
 #include "../EnvCore/i2cdriver/i2c1_drv.h"
 #include "../EnvCore/bmp280/bmp280.h"
-
+#include "../EnvCore/monitoring/monitoring.h"
 
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-#define THREAD_STACK_SIZE 1024
-
-static uint8_t    env_thread_stack[THREAD_STACK_SIZE];
-static TX_THREAD  env_thread_ptr;
-
-static uint32_t ret_val;
 
 
 /* USER CODE END PTD */
@@ -54,14 +49,13 @@ static uint32_t ret_val;
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
+static uint32_t ret_val;
+
 
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 /* USER CODE BEGIN PFP */
-
-
-VOID env_thread_entry(ULONG initial_input);
 
 /* USER CODE END PFP */
 
@@ -81,12 +75,20 @@ UINT App_ThreadX_Init(VOID *memory_ptr)
 
   /* USER CODE BEGIN App_ThreadX_Init */
 
-  //Initiate thread
-  ret_val = tx_thread_create(&env_thread_ptr, "env_thread",
-		  env_thread_entry, 0x1234,
-		  env_thread_stack, THREAD_STACK_SIZE,
-		  15,15,1,
-		  TX_AUTO_START);
+
+
+
+  //Monitoring thread
+  ret_val = tx_thread_create(
+		  &mt_thread_ptr,            //pointer to thread structure
+		  "mt_thread",               //thread name
+		  mt_thread,                 //main thread function
+		  0x1234,                    //thread input value, not used
+		  mt_thread_stack,           //stack array
+		  MT_TH_STACK_SIZE,          //stack array size
+		  15,15,                     //priority, preemption threshold,
+		  1,                         //thread slice count, active for 1=systick
+		  TX_AUTO_START);            //start thread as ready
 
 
 
@@ -114,50 +116,6 @@ void MX_ThreadX_Init(void)
 }
 
 /* USER CODE BEGIN 1 */
-
-VOID env_thread_entry(ULONG initial_input)
-{
-	char   uart_buf[30];
-	float  temperature = 0.0f;
-	float  pressure = 0.0f;
-
-	serial_print("Env thread: running\n\r");
-
-
-
-
-	//bmp280 channel 1
-	BMP_Module bmp_c1;
-
-
-
-	bmp_init_default_conf(&bmp_c1);
-	bmp_init(&bmp_c1, BMP_I2C_ADDR);
-
-
-
-	bmp_read_temp_and_press(&bmp_c1, &temperature, &pressure);
-	sprintf(uart_buf,"temp: %0.2f \t pres: %0.2f\n\r", temperature, pressure);
-	serial_print(uart_buf);
-
-
-	while(1){
-
-		bmp_read_temp_and_press(&bmp_c1, &temperature, &pressure);
-		sprintf(uart_buf,"temp: %0.2f \t pres: %0.2f\n\r", temperature, pressure);
-		serial_print(uart_buf);
-		tx_thread_sleep(100);
-
-	}
-
-}
-
-
-
-
-
-
-
 
 
 /* USER CODE END 1 */

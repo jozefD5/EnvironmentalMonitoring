@@ -22,6 +22,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include "../EnvCore/serialcom/serialcom.h"
 
 /* USER CODE END Includes */
 
@@ -95,8 +96,14 @@ int main(void)
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  serial_print("\n--- Starting Env Monitor ---\n\r");
+
+  //Initiate serial interface
+  seria_init(&huart1);
+
+  serial_print("\n--- Starting Env Monitor V:0.1---\n\r");
+  serial_print("Version: 0.01\n\n\r");
   HAL_Delay(200);
+
 
 
 
@@ -256,14 +263,6 @@ static void MX_GPIO_Init(void)
 
 /* USER CODE BEGIN 4 */
 
-/**
- * @brief Serial print via UART1
- * @param[in] *str  pointer to char array
- */
-void serial_print(char *str)
-{
-	HAL_UART_Transmit(&huart1, (uint8_t *)str, strlen(str), 10);
-}
 
 
 /* USER CODE END 4 */

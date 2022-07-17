@@ -2,11 +2,10 @@
  * bmp280.c
  * @brief bmp280 driver for communication and configuration via i2c bus
  */
-
-
 #include "main.h"
 #include "bmp280.h"
 #include "../i2cdriver/i2c1_drv.h"
+#include "../serialcom/serialcom.h"
 
 //i2c buffers
 uint8_t  txbuf[3];
@@ -270,16 +269,14 @@ HAL_StatusTypeDef bmp_init(BMP_Module *bmpP, uint16_t addr){
 
 
 /**
- * @brief          Read temperature in deg C and barometric pressure
+ * @brief          Read temperature in deg C and barometric pressure. Readings are
+ * 				   stored in bmp280 struct
  * @param[in]      bmpP       pointer to bmp280 structure
- * @param[in/out]  temp_val   pointer to variable to store temperature in degree C
- * @param[in/out]  press_Val  pointer to variable to store pressure in bar
  */
-HAL_StatusTypeDef bmp_read_temp_and_press(BMP_Module *bmpP, float *temp_val, float *press_val){
+HAL_StatusTypeDef bmp_read_temp_and_press(BMP_Module *bmpP){
 
 	uint32_t  adc_p = 0;
 	int64_t   pressure = 0;
-	float     pressure_bar = 0.0f;
 
 	uint32_t  adc_t = 0;
 	int32_t   var1 = 0;
@@ -309,7 +306,7 @@ HAL_StatusTypeDef bmp_read_temp_and_press(BMP_Module *bmpP, float *temp_val, flo
 	t_fine = var1 + var2;
 
 	temperature = (t_fine * 5 + 128) >> 8;
-	*temp_val = temperature/100;
+	bmpP->temp = temperature/100;
 
 
 
@@ -324,7 +321,7 @@ HAL_StatusTypeDef bmp_read_temp_and_press(BMP_Module *bmpP, float *temp_val, flo
 	var1 = (((int64_t) 1 << 47) + var1) * ((int64_t)bmpP->dig_P1) >> 33;
 
 	//don't divide by zero
-	if(var1 == 0){ *press_val = 0;   }
+	if(var1 == 0){ bmpP->pres = 0;   }
 
 
 	pressure = 1048576 - adc_p;
@@ -333,11 +330,7 @@ HAL_StatusTypeDef bmp_read_temp_and_press(BMP_Module *bmpP, float *temp_val, flo
 	var1 = ((int64_t) bmpP->dig_P9 * (pressure >> 13) * (pressure >> 13)) >> 25;
 	var2 = ((int64_t) bmpP->dig_P8 * pressure) >> 19;
 
-	pressure_bar  = (float)((pressure + var1 + var2) >> 8) + ((int64_t) bmpP->dig_P7 << 4);
-	pressure_bar  = (pressure_bar/256)/100000;
-	*press_val = pressure_bar;
-
-
+	bmpP->pres  = (float)((pressure + var1 + var2) >> 8) + ((int64_t) bmpP->dig_P7 << 4);
 
 	return HAL_OK;
 }

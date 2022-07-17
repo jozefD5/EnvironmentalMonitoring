@@ -104,7 +104,8 @@ typedef struct {
 
 
 /**
- * @brief Sensor struct, holds all required parameters and settings
+ * @brief Sensor struct, holds all required parameters, settings
+ *        temperature in degree C  and  barometric pressure in hPa
  */
 typedef struct {
 
@@ -124,6 +125,9 @@ typedef struct {
     int16_t  dig_P8;
     int16_t  dig_P9;
 
+    float    temp;
+    float    pres;
+
 
 } BMP_Module;
 
@@ -138,7 +142,7 @@ typedef struct {
 
 void bmp_init_default_conf(BMP_Module *bmpP);
 HAL_StatusTypeDef bmp_init(BMP_Module *bmpP, uint16_t addr);
-HAL_StatusTypeDef bmp_read_temp_and_press(BMP_Module *bmpP, float *temp_val, float *press_val);
+HAL_StatusTypeDef bmp_read_temp_and_press(BMP_Module *bmpP);
 
 
 

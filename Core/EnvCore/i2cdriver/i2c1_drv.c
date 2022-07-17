@@ -2,9 +2,9 @@
  * i2c1_drv.c
  * @brief i2c driver for i2c bus 2, provides abstraction for read and write operations
  */
-
 #include "main.h"
 #include "i2c1_drv.h"
+#include "../serialcom/serialcom.h"
 
 
 static char uart_buf[25];
