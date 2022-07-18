@@ -209,7 +209,7 @@ void bmp_init_default_conf(BMP_Module *bmpP){
 	bmpP->params.filter = BMP_FILTER_OFF;
 	bmpP->params.osp_pressure = BMP_STANDARD;
 	bmpP->params.osp_temperature = BMP_STANDARD;
-	bmpP->params.standby_time = BMP_STANDBY_125;
+	bmpP->params.standby_time = BMP_STANDBY_05;
 }
 
 

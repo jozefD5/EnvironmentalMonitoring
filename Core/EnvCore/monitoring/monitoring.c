@@ -14,6 +14,8 @@
 uint8_t    mt_thread_stack[MT_TH_STACK_SIZE];
 TX_THREAD  mt_thread_ptr;
 
+//Mutex
+TX_MUTEX mutex_ptr;
 
 
 
@@ -28,13 +30,17 @@ static float temperature_c = 0.0f;
 static float pressure_hpa = 0.0f;
 
 
-
 //Init function, configures bmp280 sensor and required parameter
 static void mt_init(void){
 
+	//Create mutex
+	tx_mutex_create(&mutex_ptr, "mt_mutex", TX_NO_INHERIT );
+
 	//Setup bmp280 sensor
-	bmp_init_default_conf(&bmp_c1);
-	bmp_init(&bmp_c1, BMP_I2C_ADDR);
+	tx_mutex_get(&mutex_ptr, MT_MUTEX_WAIT);
+		bmp_init_default_conf(&bmp_c1);
+		bmp_init(&bmp_c1, BMP_I2C_ADDR);
+	tx_mutex_put(&mutex_ptr);
 
 }
 
@@ -46,6 +52,8 @@ static void mt_init(void){
  */
 void mt_thread(ULONG initial_input){
 
+	(void)initial_input;
+
 	//Init
 	mt_init();
 
@@ -55,18 +63,15 @@ void mt_thread(ULONG initial_input){
 	while(1){
 
 		//Read temperature and pressure
-		bmp_read_temp_and_press(&bmp_c1);
+		tx_mutex_get(&mutex_ptr, MT_MUTEX_WAIT);
 
+			bmp_read_temp_and_press(&bmp_c1);
 
-		//Save recent readings
-		temperature_c = bmp_c1.temp;
-		pressure_hpa = bmp_c1.pres;
+			temperature_c = bmp_c1.temp;
+			pressure_hpa  = bmp_c1.pres;
 
-
-		mt_debug_read();
-
-
-		tx_thread_sleep(100);
+		tx_mutex_put(&mutex_ptr);
+		tx_thread_sleep(10);
 	}
 }
 
@@ -81,10 +86,12 @@ void mt_thread(ULONG initial_input){
  */
 void mt_debug_read(void){
 
-	char uart_buf[30];
+	char uart_buf[40];
 
-	sprintf(uart_buf,"Tep: %0.2f\tPres:0.2f\n\r", temperature_c, pressure_hpa);
-	serial_print(uart_buf);
+	tx_mutex_get(&mutex_ptr, MT_MUTEX_WAIT);
+		sprintf(uart_buf,"Temp:%0.2f\tPres:%0.2f\n\r", temperature_c, pressure_hpa);
+		serial_print(uart_buf);
+	tx_mutex_put(&mutex_ptr);
 }
 
 

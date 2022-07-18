@@ -25,8 +25,6 @@
 /* USER CODE BEGIN Includes */
 #include "main.h"
 #include "../EnvCore/serialcom/serialcom.h"
-#include "../EnvCore/i2cdriver/i2c1_drv.h"
-#include "../EnvCore/bmp280/bmp280.h"
 #include "../EnvCore/monitoring/monitoring.h"
 
 /* USER CODE END Includes */
@@ -89,6 +87,21 @@ UINT App_ThreadX_Init(VOID *memory_ptr)
 		  15,15,                     //priority, preemption threshold,
 		  1,                         //thread slice count, active for 1=systick
 		  TX_AUTO_START);            //start thread as ready
+
+
+  //Serial communication thread
+    ret_val = tx_thread_create(
+  		  &sc_thread_ptr,            //pointer to thread structure
+  		  "sc_thread",               //thread name
+  		  sc_thread,                 //main thread function
+  		  0x1234,                    //thread input value, not used
+  		  sc_thread_stack,           //stack array
+  		  SC_TH_STACK_SIZE,          //stack array size
+  		  15,15,                     //priority, preemption threshold,
+  		  1,                         //thread slice count, active for 1=systick
+  		  TX_AUTO_START);            //start thread as ready
+
+
 
 
 

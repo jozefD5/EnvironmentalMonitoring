@@ -3,10 +3,22 @@
  * @brief Serial communication interface
  */
 #include "main.h"
+#include "app_threadx.h"
+#include "serialcom.h"
+#include "../monitoring/monitoring.h"
+
+
+//Thread parameters
+uint8_t sc_thread_stack[SC_TH_STACK_SIZE];
+TX_THREAD sc_thread_ptr;
 
 
 //Local  UART handler pointer
-static UART_HandleTypeDef *uart_drv;
+UART_HandleTypeDef *uart_drv;
+
+
+//TODO, add serial read via DMA
+
 
 
 
@@ -20,8 +32,33 @@ void seria_init(UART_HandleTypeDef *u){
 
 
 
+
+
 /**
- * @brief Serial print via UART1
+ * @brief Main thread function
+ */
+void sc_thread(ULONG initial_input){
+
+	(void)initial_input;
+
+
+
+	while(1){
+
+		mt_debug_read();
+
+		tx_thread_sleep(50);
+	}
+
+}
+
+
+
+
+
+
+/**
+ * @brief Serial print via UART1, print char string
  * @param[in] *str  pointer to char array
  */
 void serial_print(char *str)
