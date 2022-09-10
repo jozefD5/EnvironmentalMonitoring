@@ -25,7 +25,7 @@ extern TX_THREAD sc_thread_ptr;
 
 
 
-void seria_init(UART_HandleTypeDef *u);
+void serial_init(UART_HandleTypeDef *uart);
 void sc_thread(ULONG initial_input);
 void serial_print(char *str);
 

@@ -89,7 +89,7 @@ void mt_debug_read(void){
 	char uart_buf[40];
 
 	tx_mutex_get(&mutex_ptr, MT_MUTEX_WAIT);
-		sprintf(uart_buf,"Temp:%0.2f\tPres:%0.2f\n\r", temperature_c, pressure_hpa);
+		sprintf(uart_buf,"Temp:%0.2f\tPres:%0.2f \n\r ", temperature_c, pressure_hpa);
 		serial_print(uart_buf);
 	tx_mutex_put(&mutex_ptr);
 }
