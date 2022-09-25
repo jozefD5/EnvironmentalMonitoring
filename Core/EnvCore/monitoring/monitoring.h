@@ -12,11 +12,6 @@
 //Stack size
 #define    MT_TH_STACK_SIZE   1024
 
-//Max number of timer ticks to suspended  and wait for mutex
-#define    MT_MUTEX_WAIT      0x01
-
-
-
 
 //Stack array
 extern uint8_t    mt_thread_stack[MT_TH_STACK_SIZE];

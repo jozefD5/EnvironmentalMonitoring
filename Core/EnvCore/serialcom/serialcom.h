@@ -10,10 +10,15 @@
 #define ENVCORE_SERIALCOM_SERIALCOM_H_
 
 
-
-
 //Stack size
-#define    SC_TH_STACK_SIZE   1024
+#define    SC_TH_STACK_SIZE     1024
+
+
+//UART buffer size
+#define    RX_BUFFER_SIZE       10
+
+
+
 
 //Stack array
 extern uint8_t sc_thread_stack[SC_TH_STACK_SIZE];
@@ -25,8 +30,9 @@ extern TX_THREAD sc_thread_ptr;
 
 
 
-void serial_init(UART_HandleTypeDef *uart);
 void sc_thread(ULONG initial_input);
 void serial_print(char *str);
+void serial_IRQHandler(void);
+
 
 #endif /* ENVCORE_SERIALCOM_SERIALCOM_H_ */

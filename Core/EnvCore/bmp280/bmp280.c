@@ -8,8 +8,8 @@
 #include "../serialcom/serialcom.h"
 
 //i2c buffers
-uint8_t  txbuf[3];
-uint8_t  rxbuf[6];
+static uint8_t  txbuf[3];
+static uint8_t  rxbuf[6];
 
 
 //uart debug string buffer

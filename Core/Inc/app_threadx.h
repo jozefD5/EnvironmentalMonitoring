@@ -57,6 +57,9 @@ void MX_ThreadX_Init(void);
 
 /* Private defines -----------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+//Max number of timer ticks to suspended  and wait for mutex
+#define    MT_MUTEX_WAIT      0x02
+
 
 /* USER CODE END PD */
 
