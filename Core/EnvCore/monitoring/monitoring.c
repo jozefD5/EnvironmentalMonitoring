@@ -77,7 +77,7 @@ void mt_thread(ULONG initial_input){
 
 
 		//Print data
-		mt_debug_read();
+		//mt_debug_read();
 
 
 		tx_mutex_put(&mutex_ptr);

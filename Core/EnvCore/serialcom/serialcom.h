@@ -15,7 +15,8 @@
 
 
 //UART buffer size
-#define    RX_BUFFER_SIZE       10
+#define    RX_BUFFER_SIZE          15
+#define    RX_SIZE_LIMIT           (RX_BUFFER_SIZE - 3)
 
 
 
@@ -26,6 +27,11 @@ extern uint8_t sc_thread_stack[SC_TH_STACK_SIZE];
 //Thread pointer
 extern TX_THREAD sc_thread_ptr;
 
+
+
+//Serial commands, .Net System.IO.Ports  adds '\n' at the end of every message. System is using '\n\t' to
+//indicate end of the message
+#define    SM_ACTIVATE      "scactive\t\n"
 
 
 

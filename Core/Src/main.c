@@ -254,7 +254,8 @@ static void MX_USART1_UART_Init(void)
   }
   /* USER CODE BEGIN USART1_Init 2 */
 
-  USART1->CR1 |= USART_CR1_RXNEIE;    //Enable uart EX interrupt
+  USART1->CR1 |= USART_CR1_RXNEIE;      //Enable uart RX interrupt
+  //USART1->CR1 |= USART_CR1_IDLEIE;    //Idle interrupt
 
   /* USER CODE END USART1_Init 2 */
 
@@ -287,12 +288,7 @@ static void MX_GPIO_Init(void)
 }
 
 /* USER CODE BEGIN 4 */
-/*
-void USART1_IRQHandler(void){
 
-
-}
-*/
 
 
 /* USER CODE END 4 */
