@@ -1,8 +1,10 @@
 /*
  * monitoring.c
+ * Author:
  * @brief Monitoring thread, monitors bmp280 temperature and pressure
  */
 #include "main.h"
+#include <stdbool.h>
 #include "app_threadx.h"
 #include "monitoring.h"
 
@@ -32,6 +34,8 @@ static float pressure_hpa = 0.0f;
 //UART tx buff
 static char uart_buf[25];
 
+//Active/deactive monitoring
+static bool env_active;
 
 
 
@@ -40,6 +44,10 @@ static void mt_init(void){
 
 	//Create mutex
 	tx_mutex_create(&mutex_ptr, "mt_mutex", TX_NO_INHERIT );
+
+	//deactivate monitoring
+	env_active = false;
+
 
 	//Setup bmp280 sensor
 	tx_mutex_get(&mutex_ptr, MT_MUTEX_WAIT);
@@ -69,17 +77,21 @@ void mt_thread(ULONG initial_input){
 
 		tx_mutex_get(&mutex_ptr, MT_MUTEX_WAIT);
 
-		//Read sensor data
-		bmp_read_temp_and_press(&bmp_c1);
 
-		temperature_c = bmp_c1.temp;
-		pressure_hpa  = bmp_c1.pres;
+		//Only run when monitoring is activated
+		if(env_active){
 
+			//Read sensor data
+			bmp_read_temp_and_press(&bmp_c1);
 
-		//Print data
-		//mt_debug_read();
+			temperature_c = bmp_c1.temp;
+			pressure_hpa  = bmp_c1.pres;
 
+			//Print data
+			//mt_debug_read();
 
+			HAL_GPIO_TogglePin(hb_led_GPIO_Port, hb_led_Pin);
+		}
 		tx_mutex_put(&mutex_ptr);
 		tx_thread_sleep(50);
 	}
@@ -99,6 +111,44 @@ void mt_debug_read(void){
 	sprintf(uart_buf,"Temp: %.2f Pres: %.2f \n\r", temperature_c, pressure_hpa);
 	serial_print(uart_buf);
 }
+
+
+
+
+
+//Internal settings control
+static void mt_settings_i(bool acc){
+	env_active = acc;
+}
+
+
+
+
+/**
+ * Apply new settings to monitoring thread
+ */
+void mt_settings(bool acc){
+	tx_mutex_get(&mutex_ptr, MT_MUTEX_WAIT);
+		mt_settings_i(acc);
+	tx_mutex_put(&mutex_ptr);
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

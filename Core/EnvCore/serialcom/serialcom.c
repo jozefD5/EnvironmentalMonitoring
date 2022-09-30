@@ -2,8 +2,8 @@
  * serialcom.c
  * @brief Serial communication interface
  */
-#include <stdbool.h>
 #include "main.h"
+#include <stdbool.h>
 #include "app_threadx.h"
 #include "serialcom.h"
 #include "../EnvCore.h"
@@ -30,9 +30,6 @@ static uint8_t  rx_count;
 //Receive complete flag
 static bool rx_complete;
 
-//Receive flag
-static bool rx_ir = false;
-
 
 
 
@@ -43,9 +40,6 @@ static void reset_data_values(void){
 	rx_count = 0;
 	rx_complete = 0;
 }
-
-
-
 
 
 //Initiate serial thread
@@ -69,53 +63,47 @@ void sc_thread(ULONG initial_input)
 {
 	(void)initial_input;
 
+	//serial received command
+	char command_str[RX_BUFFER_SIZE];
+
 
 	//Init
 	serial_init();
+	tx_thread_sleep(10);
 
-	tx_thread_sleep(50);
-	int strLength = strlen(SM_ACTIVATE);
 
-	serial_print("\nCommand: ");
-	serial_print(SM_ACTIVATE);
-
-	uint8_t  strTest[10];
-	sprintf((char *)strTest, "C: %d", strLength);
-	serial_print((char *)strTest);
 
 
 
 	while(1){
 
-		//serial_print("TH: S\n\r");
-
-
-
 		tx_mutex_get(&mutex_ptr, MT_MUTEX_WAIT);
 
+			//Check of received is completed
+			if(rx_complete == true){
 
-		if(rx_ir){
-			serial_print("\n\r");
-		    serial_print( ((char*)(rx_buf)));
-			rx_ir = false;
-		}
-
+				//assign received string to local variable in char format
+				memcpy(command_str, ((char *)(rx_buf)), sizeof(rx_buf));
 
 
+				//Compare buffer string to available commands
+				if( strcmp( command_str, SC_ACTIVATE) == 0 ){
+					mt_settings(true);
 
-		if(rx_complete == true){
+				}else if( strcmp( command_str, SC_DEACTIVATE) == 0 ){
+					mt_settings(false);
 
-			//Compare buffer string to available commands
-			if( strcmp( ((char *)(rx_buf)), SM_ACTIVATE) == 0 ){
-				HAL_GPIO_TogglePin(hb_led_GPIO_Port, hb_led_Pin);
+
+
+				}else{}
+
+
+
+
+				//Reset
+				reset_data_values();
+				rx_complete = false;
 			}
-
-
-			//Reset
-			reset_data_values();
-			rx_complete = false;
-		}
-
 
 		tx_mutex_put(&mutex_ptr);
 		tx_thread_sleep(1);
@@ -135,8 +123,8 @@ void serial_print(char *str)
 {
 	tx_mutex_get(&mutex_print_ptr, MT_MUTEX_WAIT);
 
-	while(  HAL_UART_GetState(UART_DRV) != HAL_UART_STATE_READY   ){}
 	HAL_UART_Transmit(UART_DRV, (uint8_t*)str, strlen(str), 50);
+	while(  HAL_UART_GetState(UART_DRV) != HAL_UART_STATE_READY   ){}
 
 	tx_mutex_put(&mutex_print_ptr);
 }
@@ -150,39 +138,18 @@ void serial_IRQHandler(void){
 
 	tx_mutex_get(&mutex_ptr, MT_MUTEX_WAIT);
 
+		//Only read if rx buffer is ready to read
+		if(USART1->ISR & USART_ISR_RXNE){
 
+			rx_buf[rx_count] = USART1->RDR & 0xFF;
 
-	//Only read if rx buffer is ready to read
-	if(USART1->ISR & USART_ISR_RXNE){
+			//check if buffer is full or escape character was received
+			if( rx_count == RX_SIZE_LIMIT || ((char)rx_buf[rx_count]) == '\t'){
+				rx_complete = true;
+			}
 
-		rx_buf[rx_count] = USART1->RDR & 0xFF;
-
-		//check if buffer is full or escape character was received
-		if( rx_count == RX_SIZE_LIMIT || ((char)rx_buf[rx_count]) == '\t'){
-			rx_complete = true;
+			rx_count++;
 		}
-
-		rx_ir = true;
-		rx_count++;
-	}
-
-
-
-
-
-
-
-/*
-	if(USART1->ISR & USART_ISR_IDLE){
-
-		HAL_GPIO_TogglePin(hb_led_GPIO_Port, hb_led_Pin);
-		//rx_buf[rx_count] = USART1->RDR & 0xFF;
-
-		__HAL_UART_CLEAR_IDLEFLAG(UART_DRV);
-		//serial_print("rx \n\r");
-	}
-*/
-
 	tx_mutex_put(&mutex_ptr);
 }
 

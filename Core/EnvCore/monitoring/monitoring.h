@@ -3,7 +3,7 @@
  * @brief Monitoring thread, monitors bmp280 temperature and pressure
  */
 #include "app_threadx.h"
-
+#include <stdbool.h>
 
 
 #ifndef ENVCORE_MONITORING_MONITORING_H_
@@ -26,6 +26,8 @@ extern TX_THREAD  mt_thread_ptr;
 
 void mt_thread(ULONG initial_input);
 void mt_debug_read(void);
+void mt_settings(bool acc);
+
 
 
 #endif /* ENVCORE_MONITORING_MONITORING_H_ */
