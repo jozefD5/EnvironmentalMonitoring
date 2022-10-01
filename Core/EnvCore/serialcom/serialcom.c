@@ -21,6 +21,7 @@ TX_THREAD sc_thread_ptr;
 static TX_MUTEX mutex_ptr;
 static TX_MUTEX mutex_print_ptr;
 
+
 //UART rx buffer
 static uint8_t  rx_buf[RX_BUFFER_SIZE];
 
@@ -29,6 +30,24 @@ static uint8_t  rx_count;
 
 //Receive complete flag
 static bool rx_complete;
+
+
+
+
+//Output monitoring thread active status
+static void serialhandler_read_status(void){
+	char str_buf[20];
+	bool status = mt_get_status();
+
+	sprintf(str_buf, "%s: %d\n\r", SC_TX_STATUS, status);
+	serial_print(str_buf);
+}
+
+
+
+
+
+
 
 
 
@@ -71,7 +90,7 @@ void sc_thread(ULONG initial_input)
 	serial_init();
 	tx_thread_sleep(10);
 
-
+	serialhandler_read_status();
 
 
 
@@ -87,14 +106,18 @@ void sc_thread(ULONG initial_input)
 
 
 				//Compare buffer string to available commands
-				if( strcmp( command_str, SC_ACTIVATE) == 0 ){
+				if(strcmp(command_str, SC_RX_ACTIVATE) == 0){
 					mt_settings(true);
 
-				}else if( strcmp( command_str, SC_DEACTIVATE) == 0 ){
+				}else if(strcmp(command_str, SC_RX_DEACTIVATE) == 0){
 					mt_settings(false);
 
+				}else if(strcmp(command_str, SC_RX_STATUS) == 0){
+					serialhandler_read_status();
 
 
+
+				//default, do nothing
 				}else{}
 
 

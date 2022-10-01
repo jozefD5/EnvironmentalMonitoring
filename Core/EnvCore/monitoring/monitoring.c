@@ -39,6 +39,8 @@ static bool env_active;
 
 
 
+
+
 //Init function, configures bmp280 sensor and required parameter
 static void mt_init(void){
 
@@ -123,7 +125,6 @@ static void mt_settings_i(bool acc){
 
 
 
-
 /**
  * Apply new settings to monitoring thread
  */
@@ -137,8 +138,17 @@ void mt_settings(bool acc){
 
 
 
+/**
+ *
+ */
+bool mt_get_status(void){
 
+	tx_mutex_get(&mutex_ptr, MT_MUTEX_WAIT);
+		bool status = env_active;
+	tx_mutex_put(&mutex_ptr);
 
+	return status;
+}
 
 
 

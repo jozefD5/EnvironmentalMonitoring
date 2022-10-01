@@ -27,7 +27,7 @@ extern TX_THREAD  mt_thread_ptr;
 void mt_thread(ULONG initial_input);
 void mt_debug_read(void);
 void mt_settings(bool acc);
-
+bool mt_get_status(void);
 
 
 #endif /* ENVCORE_MONITORING_MONITORING_H_ */
