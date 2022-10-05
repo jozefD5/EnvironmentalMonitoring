@@ -37,8 +37,8 @@ extern TX_THREAD sc_thread_ptr;
 
 //TX commands
 #define    SC_TX_STATUS           "env_status"
-
-
+#define    SC_TX_TEMP_DATA        "env_temp"
+#define    SC_TX_PRES_DATA        "env_pres"
 
 
 void sc_thread(ULONG initial_input);

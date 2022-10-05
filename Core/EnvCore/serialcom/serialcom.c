@@ -50,8 +50,6 @@ static void serialhandler_read_status(void){
 
 
 
-
-
 //Reset local variables to start-up values
 static void reset_data_values(void){
 
@@ -68,7 +66,6 @@ static void serial_init(void){
 	tx_mutex_create(&mutex_print_ptr, "print mutex", TX_INHERIT);
 
 	reset_data_values();
-
 }
 
 

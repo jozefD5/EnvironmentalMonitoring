@@ -41,6 +41,20 @@ static bool env_active;
 
 
 
+/**
+ * Output most recent data
+ */
+static void mt_output_data(void){
+
+	sprintf(uart_buf, "%s: %0.2f\n\r",SC_TX_TEMP_DATA, temperature_c);
+	serial_print(uart_buf);
+
+	sprintf(uart_buf, "%s: %0.2f\n\r",SC_TX_PRES_DATA, pressure_hpa);
+	serial_print(uart_buf);
+}
+
+
+
 //Init function, configures bmp280 sensor and required parameter
 static void mt_init(void){
 
@@ -70,7 +84,7 @@ void mt_thread(ULONG initial_input){
 
 	//Init
 	mt_init();
-	tx_thread_sleep(10);
+	tx_thread_sleep(20);
 
 
 
@@ -89,8 +103,8 @@ void mt_thread(ULONG initial_input){
 			temperature_c = bmp_c1.temp;
 			pressure_hpa  = bmp_c1.pres;
 
-			//Print data
-			//mt_debug_read();
+			//Output data
+			//mt_output_data();
 
 			HAL_GPIO_TogglePin(hb_led_GPIO_Port, hb_led_Pin);
 		}
@@ -104,15 +118,6 @@ void mt_thread(ULONG initial_input){
 
 
 
-
-/**
- * Read temperature
- */
-void mt_debug_read(void){
-
-	sprintf(uart_buf,"Temp: %.2f Pres: %.2f \n\r", temperature_c, pressure_hpa);
-	serial_print(uart_buf);
-}
 
 
 
