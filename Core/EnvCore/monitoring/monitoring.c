@@ -50,10 +50,10 @@ static bool env_active;
 //Output most recent data
 static void mt_output_data(void){
 
-	sprintf(uart_buf, "%s: %0.2f\n\r",SC_TX_TEMP_DATA, temperature_c);
+	sprintf(uart_buf, "%s:%0.2f\n\r",SC_TX_TEMP_DATA, temperature_c);
 	serial_print(uart_buf);
 
-	sprintf(uart_buf, "%s: %0.2f\n\r",SC_TX_PRES_DATA, pressure_hpa);
+	sprintf(uart_buf, "%s:%0.2f\n\r",SC_TX_PRES_DATA, pressure_hpa);
 	serial_print(uart_buf);
 }
 
