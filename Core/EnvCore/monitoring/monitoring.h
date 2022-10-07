@@ -13,13 +13,16 @@
 #define    MT_TH_STACK_SIZE   1024
 
 
+//Default cycle limit/trigger value. Sets interval for reporting (sending) data. RTOS will produce 100 timer ticks / second (1000ms).
+//Therefore 1000ms/100 = 10ms delay per tick. This means that 50 ticks will equals 500ms delay
+#define    MT_REPORT_INTERVAL     50
+
+
 //Stack array
 extern uint8_t    mt_thread_stack[MT_TH_STACK_SIZE];
 
 //Thread pointer
 extern TX_THREAD  mt_thread_ptr;
-
-
 
 
 

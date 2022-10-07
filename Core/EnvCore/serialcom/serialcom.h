@@ -31,9 +31,9 @@ extern TX_THREAD sc_thread_ptr;
 
 //Serial commands, .Net System.IO.Ports  adds '\n' at the end of every message. System is using '\n\t' to indicate end of the message
 //RX commands
-#define    SC_RX_ACTIVATE         "env_aenvm\t\n"           //activate environment monitoring
-#define    SC_RX_DEACTIVATE       "env_deaenvm\t\n"         //deactivate environment monitoring
-#define    SC_RX_STATUS           "env_rstatus\t\n"         //read monitoring status
+#define    SC_RX_ACTIVATE         "env_aenvm\t"           //activate environment monitoring
+#define    SC_RX_DEACTIVATE       "env_deaenvm\t"         //deactivate environment monitoring
+#define    SC_RX_STATUS           "env_rstatus\t"         //read monitoring status
 
 //TX commands
 #define    SC_TX_STATUS           "env_status"

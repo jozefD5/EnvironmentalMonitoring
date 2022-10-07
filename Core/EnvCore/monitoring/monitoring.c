@@ -25,25 +25,29 @@ static TX_MUTEX mutex_ptr;
 //Sensor bmp280 channel 1
 static BMP_Module bmp_c1;
 
+//UART tx buff
+static char uart_buf[25];
+
+//Reading cycle counter
+static uint32_t cycle_count;
+
+//Cycle count trigger value
+static uint32_t report_ticks;
+
 //Measured temperature
 static float temperature_c = 0.0f;
 
 //Measured pressure
 static float pressure_hpa = 0.0f;
 
-//UART tx buff
-static char uart_buf[25];
-
-//Active/deactive monitoring
+//Activate/deactivate monitoring
 static bool env_active;
 
 
 
 
 
-/**
- * Output most recent data
- */
+//Output most recent data
 static void mt_output_data(void){
 
 	sprintf(uart_buf, "%s: %0.2f\n\r",SC_TX_TEMP_DATA, temperature_c);
@@ -52,6 +56,40 @@ static void mt_output_data(void){
 	sprintf(uart_buf, "%s: %0.2f\n\r",SC_TX_PRES_DATA, pressure_hpa);
 	serial_print(uart_buf);
 }
+
+
+//Reset all internal data to power-up/reset state
+static void data_reset(void){
+		cycle_count = 0;
+		temperature_c = 0.0f;
+		pressure_hpa = 0.0f;
+}
+
+
+//Read and average recorded data
+static void record_data(void){
+
+	//Read sensor data
+	bmp_read_temp_and_press(&bmp_c1);
+
+	//Add new data
+	temperature_c += bmp_c1.temp;;
+	pressure_hpa += bmp_c1.pres;;
+}
+
+
+//Report recorded data
+static void report_data(void){
+
+	//Calculate average values
+	temperature_c /= (float)cycle_count;
+	pressure_hpa /= (float)cycle_count;
+
+	//Send data
+	mt_output_data();
+	data_reset();
+}
+
 
 
 
@@ -64,6 +102,12 @@ static void mt_init(void){
 	//deactivate monitoring
 	env_active = false;
 
+	//Set default report interval
+	report_ticks = MT_REPORT_INTERVAL;
+
+	//Reset data
+	data_reset();
+
 
 	//Setup bmp280 sensor
 	tx_mutex_get(&mutex_ptr, MT_MUTEX_WAIT);
@@ -71,6 +115,9 @@ static void mt_init(void){
 		bmp_init(&bmp_c1, BMP_I2C_ADDR);
 	tx_mutex_put(&mutex_ptr);
 }
+
+
+
 
 
 
@@ -97,25 +144,20 @@ void mt_thread(ULONG initial_input){
 		//Only run when monitoring is activated
 		if(env_active){
 
-			//Read sensor data
-			bmp_read_temp_and_press(&bmp_c1);
+			cycle_count++;
 
-			temperature_c = bmp_c1.temp;
-			pressure_hpa  = bmp_c1.pres;
+			record_data();
 
-			//Output data
-			//mt_output_data();
+			if(cycle_count >= report_ticks){
+				report_data();
+			}
 
 			HAL_GPIO_TogglePin(hb_led_GPIO_Port, hb_led_Pin);
 		}
 		tx_mutex_put(&mutex_ptr);
-		tx_thread_sleep(50);
+		tx_thread_sleep(1);
 	}
 }
-
-
-
-
 
 
 
