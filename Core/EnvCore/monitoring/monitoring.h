@@ -27,9 +27,36 @@ extern TX_THREAD  mt_thread_ptr;
 
 
 
+
+
+/**
+ * @brief Monitoring thread settings struct
+ */
+typedef struct {
+
+	bool has_active;
+	bool active;
+
+	bool has_interval_tick;
+	int32_t interval_tick;
+
+	bool has_active_temp;
+	bool active_temp;
+
+	bool has_active_pres;
+	bool active_pres;
+
+}MonSettings;
+
+
+
+
+
+
+
 void mt_thread(ULONG initial_input);
 void mt_debug_read(void);
-void mt_settings(bool acc);
+void mt_settings(MonSettings *s);
 bool mt_get_status(void);
 
 

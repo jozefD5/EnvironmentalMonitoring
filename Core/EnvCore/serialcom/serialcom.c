@@ -6,6 +6,7 @@
 #include <stdbool.h>
 #include "app_threadx.h"
 #include "serialcom.h"
+#include "serialcommands.h"
 #include "../EnvCore.h"
 #include "../monitoring/monitoring.h"
 
@@ -39,7 +40,7 @@ static void serialhandler_read_status(void){
 	char str_buf[20];
 	bool status = mt_get_status();
 
-	sprintf(str_buf, "%s: %d\n\r", SC_TX_STATUS, status);
+	sprintf(str_buf, "%s: %d\n\r", ENV_SC_STATUS, status);
 	serial_print(str_buf);
 }
 
@@ -92,7 +93,6 @@ void sc_thread(ULONG initial_input)
 
 
 	while(1){
-
 		tx_mutex_get(&mutex_ptr, MT_MUTEX_WAIT);
 
 			//Check of received is completed
@@ -103,14 +103,51 @@ void sc_thread(ULONG initial_input)
 
 
 				//Compare buffer string to available commands
-				if(strcmp(command_str, SC_RX_ACTIVATE) == 0){
-					mt_settings(true);
+				//Activate monitoring
+				if(strcmp(command_str, ENV_SC_ACTIVATE) == 0){
+					MonSettings ss;
+					ss.has_active = true;
+					ss.active = true;
+					mt_settings(&ss);
 
-				}else if(strcmp(command_str, SC_RX_DEACTIVATE) == 0){
-					mt_settings(false);
+				//Deactivate monitoring
+				}else if(strcmp(command_str, ENV_SC_DEACTIVATE) == 0){
+					MonSettings ss;
+					ss.has_active = true;
+					ss.active = false;
+					mt_settings(&ss);
 
-				}else if(strcmp(command_str, SC_RX_STATUS) == 0){
+				//Read and output monitoring status
+				}else if(strcmp(command_str, ENV_SC_RSTATUS) == 0){
 					serialhandler_read_status();
+
+				//Activate temperature monitoring
+				}else if(strcmp(command_str, ENV_SC_TEMP_ACTIVE) == 0){
+					MonSettings ss;
+					ss.has_active_temp = true;
+					ss.active_temp = true;
+					mt_settings(&ss);
+
+				//Deactivate temperature monitoring
+				}else if(strcmp(command_str, ENV_SC_TEMP_DEACTIVE) == 0){
+					MonSettings ss;
+					ss.has_active_temp = true;
+					ss.active_temp = false;
+					mt_settings(&ss);
+
+				//Activate pressure monitoring
+				}else if(strcmp(command_str, ENV_SC_PRES_ACTIVE) == 0){
+					MonSettings ss;
+					ss.has_active_pres = true;
+					ss.active_pres = true;
+					mt_settings(&ss);
+
+				//Deactivate pressure monitoring
+				}else if(strcmp(command_str, ENV_SC_PRES_DEACTIVE) == 0){
+					MonSettings ss;
+					ss.has_active_pres = true;
+					ss.active_pres = false;
+					mt_settings(&ss);
 
 
 

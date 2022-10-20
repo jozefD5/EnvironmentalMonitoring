@@ -24,10 +24,8 @@ static char uart_buf[25];
 
 //Write single byte
 static HAL_StatusTypeDef bmp_write_byte(BMP_Module *bmpP, uint8_t reg, uint8_t val){
-
 	txbuf[0] = reg;
 	txbuf[1] = val;
-
 	return i2c1_trx(bmpP->i2c_addr, txbuf, 2, rxbuf, 0);
 }
 
@@ -38,9 +36,7 @@ static uint8_t bmp_read_byte(BMP_Module *bmpP, uint8_t reg){
 	txbuf[0] = reg;
 
 	if(i2c1_trx(bmpP->i2c_addr, txbuf, 1, rxbuf, 1) == HAL_OK){
-
 		return rxbuf[0];
-
 	}else {
 		return 0;
 	}
@@ -54,9 +50,7 @@ static uint16_t bmp_read_u16(BMP_Module *bmpP, uint8_t reg){
 	uint16_t val = 0;
 	txbuf[0] = reg;
 
-
 	if( i2c1_trx(bmpP->i2c_addr, txbuf, 1, rxbuf, 2) != HAL_OK ){ return 0;  }
-
 	val = (rxbuf[1] << 8)  | rxbuf[0];
 
 	return val;
@@ -67,13 +61,10 @@ static uint16_t bmp_read_u16(BMP_Module *bmpP, uint8_t reg){
 //Read register and output signed 16bit value
 static int16_t bmp_read_i16(BMP_Module *bmpP, uint8_t reg){
 
-
 	int16_t val = 0;
 	txbuf[0] = reg;
 
-
 	if( i2c1_trx(bmpP->i2c_addr, txbuf, 1, rxbuf, 2) != HAL_OK ){ return 0;  }
-
 	val = ( ((int16_t)rxbuf[1]) << 8)  |  ((int16_t)rxbuf[0]);
 
 	return val;
@@ -92,7 +83,6 @@ static HAL_StatusTypeDef bmp_read_calibration(BMP_Module *bmpP){
 	ref[0] = bmpP->dig_T1  =  bmp_read_u16(bmpP, 0x88);
 	ref[1] = bmpP->dig_P1  =  bmp_read_u16(bmpP, 0x8E);
 
-
 	//Read signed values
 	ref[2] = bmpP->dig_T2  =  bmp_read_i16(bmpP, 0x8A);
 	ref[3] = bmpP->dig_T3  =  bmp_read_i16(bmpP, 0x8C);
@@ -105,7 +95,6 @@ static HAL_StatusTypeDef bmp_read_calibration(BMP_Module *bmpP){
 	ref[9] = bmpP->dig_P7  =  bmp_read_i16(bmpP, 0x9A);
 	ref[10] = bmpP->dig_P8  =  bmp_read_i16(bmpP, 0x9C);
 	ref[11] = bmpP->dig_P9  =  bmp_read_i16(bmpP, 0x9E);
-
 
 	//Check for any failed data transmission
 	for(uint32_t i = 0; i<12; i++) {
@@ -187,13 +176,8 @@ static HAL_StatusTypeDef bmp_configure(BMP_Module *bmpP){
 
 	if(ref != HAL_OK){return ref; }
 
-
-
 	return ref;
 }
-
-
-
 
 
 
@@ -236,13 +220,11 @@ HAL_StatusTypeDef bmp_init(BMP_Module *bmpP, uint16_t addr){
 	serial_print(uart_buf);
 
 
-
 	//Read id
 	id = bmp_read_byte(bmpP, BMP_REG_ID);
 
 	sprintf(uart_buf, "ID: %x\n\r", id);
 	serial_print(uart_buf);
-
 
 
 	//Read calibration data
@@ -255,15 +237,11 @@ HAL_StatusTypeDef bmp_init(BMP_Module *bmpP, uint16_t addr){
 	//Print calibration data
 	bmp_print_calibration_data(bmpP);
 
-
-
 	//Configure
 	bmp_configure(bmpP);
 	bmp_configure(bmpP);
 
-
 	return HAL_OK;
-
 }
 
 
@@ -286,9 +264,6 @@ HAL_StatusTypeDef bmp_read_temp_and_press(BMP_Module *bmpP){
 
 
 
-
-
-
 	//Request data
 	txbuf[0] = BMP_REG_READ_STR;
 	i2c1_trx(bmpP->i2c_addr, txbuf, 1, rxbuf, 6);
@@ -296,7 +271,6 @@ HAL_StatusTypeDef bmp_read_temp_and_press(BMP_Module *bmpP){
 	//Calculate adc values
 	adc_p  =  ((uint32_t)rxbuf[0]<<12)  |  ((uint32_t)rxbuf[1]<<4)  |  ((uint32_t)rxbuf[2] >> 4);
 	adc_t  =  ((uint32_t)rxbuf[3]<<12)  |  ((uint32_t)rxbuf[4]<<4)  |  ((uint32_t)rxbuf[5] >> 4);
-
 
 
 	//Calculate temperature
@@ -307,8 +281,6 @@ HAL_StatusTypeDef bmp_read_temp_and_press(BMP_Module *bmpP){
 
 	temperature = (t_fine * 5 + 128) >> 8;
 	bmpP->temp = temperature/100;
-
-
 
 
 	//Calculate pressure
@@ -322,7 +294,6 @@ HAL_StatusTypeDef bmp_read_temp_and_press(BMP_Module *bmpP){
 
 	//don't divide by zero
 	if(var1 == 0){ bmpP->pres = 0;   }
-
 
 	pressure = 1048576 - adc_p;
 	pressure = (((pressure << 31) - var2) * 3125) / var1;
