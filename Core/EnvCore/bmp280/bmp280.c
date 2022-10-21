@@ -259,8 +259,10 @@ HAL_StatusTypeDef bmp_read_temp_and_press(BMP_Module *bmpP){
 	uint32_t  adc_t = 0;
 	int32_t   var1 = 0;
 	int32_t   var2 = 0;
+	int64_t var1_p;
+	int64_t var2_p;
 	int32_t   t_fine = 0;
-	float     temperature = 0.0f;
+	double   temperature = 0.0f;
 
 
 
@@ -273,36 +275,41 @@ HAL_StatusTypeDef bmp_read_temp_and_press(BMP_Module *bmpP){
 	adc_t  =  ((uint32_t)rxbuf[3]<<12)  |  ((uint32_t)rxbuf[4]<<4)  |  ((uint32_t)rxbuf[5] >> 4);
 
 
-	//Calculate temperature
+
+	//Calculate temperature (deg C)
 	var1 = ((((adc_t >> 3) - ((int32_t)bmpP->dig_T1 << 1))) * ((int32_t)bmpP->dig_T2)) >> 11;
 	var2 = (((((adc_t >> 4) - ((int32_t)bmpP->dig_T1)) * ((adc_t >> 4) - ((int32_t)bmpP->dig_T1))) >> 12) * ((int32_t)bmpP->dig_T3)) >> 14;
 
 	t_fine = var1 + var2;
-
 	temperature = (t_fine * 5 + 128) >> 8;
 	bmpP->temp = temperature/100;
 
 
-	//Calculate pressure
-	var1  = (int64_t) t_fine - 128000;
-	var2  = var1 * var1 * (int64_t)bmpP->dig_P6;
-	var2  = var2 + ((var1 * (int64_t)bmpP->dig_P5) << 17);
-	var2  = var2 + (((int64_t)bmpP->dig_P4) << 35);
 
-	var1  = ((var1 * var1 * (int64_t)bmpP->dig_P3) >> 8)  + ((var1 * (int64_t)bmpP->dig_P2) << 12);
-	var1 = (((int64_t) 1 << 47) + var1) * ((int64_t)bmpP->dig_P1) >> 33;
+	//Calculate pressure (hPa)
+	var1_p  = ((int64_t)t_fine) - 128000;
+	var2_p  = var1_p * var1_p * (int64_t)bmpP->dig_P6;
+	var2_p  = var2_p + ((var1_p * (int64_t)bmpP->dig_P5) << 17);
+	var2_p  = var2_p + (((int64_t)bmpP->dig_P4) << 35);
+
+	var1_p  = ((var1_p * var1_p * (int64_t)bmpP->dig_P3) >> 8)  + ((var1_p * (int64_t)bmpP->dig_P2) << 12);
+	var1_p = (((int64_t)1 << 47) + var1_p) * ((int64_t)bmpP->dig_P1) >> 33;
 
 	//don't divide by zero
-	if(var1 == 0){ bmpP->pres = 0;   }
+	if(var1_p == 0){
+		bmpP->pres = 0;
+		return HAL_OK;
+	}
 
 	pressure = 1048576 - adc_p;
-	pressure = (((pressure << 31) - var2) * 3125) / var1;
+	pressure = (((pressure << 31) - var2_p) * 3125) / var1_p;
 
-	var1 = ((int64_t) bmpP->dig_P9 * (pressure >> 13) * (pressure >> 13)) >> 25;
-	var2 = ((int64_t) bmpP->dig_P8 * pressure) >> 19;
+	var1_p = ((int64_t)bmpP->dig_P9 * (pressure >> 13) * (pressure >> 13)) >> 25;
+	var2_p = ((int64_t)bmpP->dig_P8 * pressure) >> 19;
 
-	bmpP->pres  = (float)((pressure + var1 + var2) >> 8) + ((int64_t) bmpP->dig_P7 << 4);
 
+	pressure = (uint32_t)((pressure + var1_p + var2_p) >> 8) + ((int64_t) bmpP->dig_P7 << 4);
+	bmpP->pres = (((float)pressure) / 256.0)/100;
 	return HAL_OK;
 }
 

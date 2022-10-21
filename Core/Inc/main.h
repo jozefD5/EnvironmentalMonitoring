@@ -31,13 +31,14 @@ extern "C" {
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
+#include <stdio.h>
+#include <string.h>
 
 /* USER CODE END Includes */
 
 /* Exported types ------------------------------------------------------------*/
 /* USER CODE BEGIN ET */
-#include <stdio.h>
-#include <string.h>
+
 /* USER CODE END ET */
 
 /* Exported constants --------------------------------------------------------*/
@@ -68,6 +69,10 @@ void Error_Handler(void);
 #define hb_led_Pin GPIO_PIN_3
 #define hb_led_GPIO_Port GPIOI
 /* USER CODE BEGIN Private defines */
+
+//Delay per tick in ms. This is based on Azure RTOS timer tick per second, which is set to 100/second. This means that each tick equals 10ms
+#define ENV_SYS_TICK_MS          (10)
+
 
 /* USER CODE END Private defines */
 

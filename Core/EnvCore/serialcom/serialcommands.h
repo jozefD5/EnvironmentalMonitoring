@@ -25,6 +25,9 @@
 
 #define    ENV_SC_RSTATUS          "env_rstatus\t"          //read monitoring status
 
+#define    ENV_SC_RIM_NORMAL       "env_rimnorm\t"          //normal report interval mode
+#define    ENV_SC_RIM_SLOW         "env_rimslow\t"          //slow report interval mode
+#define    ENV_SC_RIM_FAST         "env_rimfast\t"          //fast report interval mode
 
 
 //TX commands

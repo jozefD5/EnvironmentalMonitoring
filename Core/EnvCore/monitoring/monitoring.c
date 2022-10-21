@@ -44,6 +44,23 @@ static MonSettings monitorringSettings;
 
 
 
+
+//Reset settings
+static void settings_reset(void){
+	monitorringSettings.has_active = false;
+	monitorringSettings.active = false;
+
+	monitorringSettings.has_interval_tick = false;
+	monitorringSettings.interval_tick = MT_REPORT_INTERVAL_NORMAL;
+
+	monitorringSettings.has_active_temp = false;
+	monitorringSettings.active_temp = false;
+
+	monitorringSettings.has_active_pres = false;
+	monitorringSettings.active_pres = false;
+}
+
+
 //Reset all internal data to power-up/reset state
 static void data_reset(void){
 		cycle_count = 0;
@@ -79,20 +96,6 @@ static void report_data(void){
 }
 
 
-//Reset settings
-static void settings_reset(void){
-	monitorringSettings.has_active = false;
-	monitorringSettings.active = false;
-
-	monitorringSettings.has_interval_tick = false;
-	monitorringSettings.interval_tick = MT_REPORT_INTERVAL;
-
-	monitorringSettings.has_active_temp = false;
-	monitorringSettings.active_temp = false;
-
-	monitorringSettings.has_active_pres = false;
-	monitorringSettings.active_pres = false;
-}
 
 
 
@@ -114,7 +117,6 @@ static void mt_init(void){
 		bmp_init(&bmp_c1, BMP_I2C_ADDR);
 	tx_mutex_put(&mutex_ptr);
 }
-
 
 
 
@@ -146,8 +148,8 @@ void mt_thread(ULONG initial_input){
 			if(cycle_count >= monitorringSettings.interval_tick){
 				report_data();
 				data_reset();
+				HAL_GPIO_TogglePin(hb_led_GPIO_Port, hb_led_Pin);
 			}
-			HAL_GPIO_TogglePin(hb_led_GPIO_Port, hb_led_Pin);
 		}
 
 		tx_mutex_put(&mutex_ptr);
@@ -167,20 +169,23 @@ static void mt_settings_i(MonSettings *s){
 	//activate/deactivate monitoring
 	if(s->has_active){
 		monitorringSettings.active = s->active;
+
 	}
 	//set interval in ticks
 	if(s->has_interval_tick){
 		monitorringSettings.interval_tick = s->interval_tick;
+
 	}
 	//activate/deactivate temperature monitoring
 	if(s->has_active_temp){
 		monitorringSettings.active_temp = s->active_temp;
+
 	}
 	//activate/deactivate pressure monitoring
 	if(s->has_active_pres){
 		monitorringSettings.active_pres = s->active_pres;
-	}
 
+	}
 }
 
 

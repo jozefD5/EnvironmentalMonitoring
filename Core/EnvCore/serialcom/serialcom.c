@@ -149,6 +149,27 @@ void sc_thread(ULONG initial_input)
 					ss.active_pres = false;
 					mt_settings(&ss);
 
+				//Set report interval mode to normal/default
+				}else if(strcmp(command_str, ENV_SC_RIM_NORMAL) == 0){
+					MonSettings ss;
+					ss.has_interval_tick = true;
+					ss.interval_tick = MT_REPORT_INTERVAL_NORMAL;
+					mt_settings(&ss);
+
+				//Set report interval mode to slow
+				}else if(strcmp(command_str, ENV_SC_RIM_SLOW) == 0){
+					MonSettings ss;
+					ss.has_interval_tick = true;
+					ss.interval_tick = MT_REPORT_INTERVAL_SLOW;
+					mt_settings(&ss);
+
+				//Set report interval mode to fast
+				}else if(strcmp(command_str, ENV_SC_RIM_FAST) == 0){
+					MonSettings ss;
+					ss.has_interval_tick = true;
+					ss.interval_tick = MT_REPORT_INTERVAL_FAST;
+					mt_settings(&ss);
+
 
 
 				//default, do nothing
