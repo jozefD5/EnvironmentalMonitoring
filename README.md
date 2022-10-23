@@ -1,7 +1,7 @@
 # Environment Monitoring 
 
 ## Overview
-This repository contains project to monitors environment (temperature and pressure), readings are in degree C and PSI respectively. Serial communication provides communication between desktop and microcontroller. Project “” provides desktop UI to communicate to microcontroller via UART, offers control and graphs to display data. 
+This repository contains project to monitors environment (temperature and pressure), readings are in degree C and PSI respectively. Serial communication provides communication between desktop and microcontroller. Project “EnvControlPanel” provides desktop UI to communicate to microcontroller via UART, offers control and graphs to display data. 
 
 Project incorporates modular approach, where each component is within its own directory, this includes components like bmp218 driver and thread’s main functions.
 
