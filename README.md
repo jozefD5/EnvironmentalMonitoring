@@ -15,8 +15,8 @@ Environment monitoring components: Core/EnvCore/
 * Communication: UASRT-1, GPIOs tx: PA9 and rx: PB7
 
 UART settings:
-*Baud Rate: 230400 Bits/sec
-*Word Length: 8 Bits
-*Parity: None
-*Stop Bits: 1
+* Baud Rate: 230400 Bits/sec
+* Word Length: 8 Bits
+* Parity: None
+* Stop Bits: 1
 
