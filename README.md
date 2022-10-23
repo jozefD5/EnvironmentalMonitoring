@@ -14,7 +14,7 @@ Environment monitoring components: Core/EnvCore/
 * Sensor: BMP218, controlled via I2C-1. GPIOs scl: PB8 and sda: PB9.
 * Communication: UASRT-1, GPIOs tx: PA9 and rx: PB7
 
-Comms settings:
+UART settings:
 *Baud Rate: 230400 Bits/sec
 *Word Length: 8 Bits
 *Parity: None
