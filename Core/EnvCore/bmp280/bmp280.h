@@ -1,12 +1,7 @@
 /*
  * bmp280.h
- *
+ * @brief bmp280 driver for communication and configuration via i2c bus
  */
-
-
-
-
-
 #ifndef _BMP280_HANDLER
 #define _BMP280_HANDLER_
 

@@ -104,10 +104,8 @@ int main(void)
   /* USER CODE BEGIN 2 */
 
 
-
-
   serial_print("\n--- Starting Env Monitor ---\n\r");
-  serial_print("Version: 0.01\n\n\r");
+  serial_print("Version: 0.1\n\n\r");
   HAL_Delay(200);
 
 

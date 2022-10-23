@@ -27,7 +27,8 @@ extern uint8_t sc_thread_stack[SC_TH_STACK_SIZE];
 //Thread pointer
 extern TX_THREAD sc_thread_ptr;
 
-
+//External pointer to UART driver
+extern UART_HandleTypeDef *UART_DRV;
 
 
 

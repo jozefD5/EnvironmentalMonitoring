@@ -1,5 +1,5 @@
 /*
- * monitoring.c
+ * monitoring.h
  * @brief Monitoring thread, monitors bmp280 temperature and pressure
  */
 #include "app_threadx.h"

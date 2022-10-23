@@ -231,7 +231,7 @@ HAL_StatusTypeDef bmp_init(BMP_Module *bmpP, uint16_t addr){
 	if(bmp_read_calibration(bmpP) == HAL_OK){
 		serial_print("Read cal: OK\n\r");
 	}else{
-		serial_print("Read cal: OK\n\r");
+		serial_print("Read cal: Error\n\r");
 	}
 
 	//Print calibration data

@@ -1,8 +1,6 @@
 /*
  * serialcommands.h
- *
- *  Created on: 19 Oct 2022
- *      Author: jozef.duda
+ * @brief includes definition of available serial commands
  */
 
 #ifndef ENVCORE_SERIALCOM_SERIALCOMMANDS_H_

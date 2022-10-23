@@ -7,7 +7,6 @@
 #include "app_threadx.h"
 #include "serialcom.h"
 #include "serialcommands.h"
-#include "../EnvCore.h"
 #include "../monitoring/monitoring.h"
 
 
@@ -43,12 +42,6 @@ static void serialhandler_read_status(void){
 	sprintf(str_buf, "%s: %d\n\r", ENV_SC_STATUS, status);
 	serial_print(str_buf);
 }
-
-
-
-
-
-
 
 
 //Reset local variables to start-up values
@@ -174,8 +167,6 @@ void sc_thread(ULONG initial_input)
 
 				//default, do nothing
 				}else{}
-
-
 
 
 				//Reset

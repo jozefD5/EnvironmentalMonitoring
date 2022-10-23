@@ -1,6 +1,5 @@
 /*
  * monitoring.c
- * Author:
  * @brief Monitoring thread, monitors bmp280 temperature and pressure
  */
 #include "main.h"
@@ -156,8 +155,6 @@ void mt_thread(ULONG initial_input){
 		tx_thread_sleep(1);
 	}
 }
-
-
 
 
 
